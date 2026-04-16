@@ -47,11 +47,11 @@ def save_games(games):
 # =========================
 def admin_menu():
     while True:
-        print("\n1. Tambah")
-        print("2. Update")
-        print("3. Delete")
-        print("4. Lihat")
-        print("5. Kembali")
+        print("\n1. Tambah Game")
+        print("2. Update Game")
+        print("3. Delete Game")
+        print("4. Lihat Game")
+        print("5. Exit")
 
         pilih = input("Pilih: ")
 
