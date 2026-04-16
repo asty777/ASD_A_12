@@ -1,10 +1,58 @@
-from database.data_manager import load_data, save_data
+from database.utils import read_file, write_file
 
-FILE_GAMES = "database/games.json"
+# =========================
+# LOAD & SAVE GAMES
+# =========================
+def load_games():
+    games = []
+    data = read_file("games.txt")
 
+    for line in data:
+        if not line.strip():
+            continue
+
+        parts = line.strip().split("|")
+
+        if len(parts) != 8:
+            continue
+
+        id, nama, genre, rating, total, jumlah, played, downloads = parts
+
+        games.append({
+            "id": int(id),
+            "nama_game": nama,
+            "genre": genre,
+            "rating": float(rating),
+            "total_rating": int(total),
+            "jumlah_rating": int(jumlah),
+            "played": int(played),
+            "downloads": int(downloads)
+        })
+
+    return games
+
+
+def save_games(games):
+    data = []
+
+    for g in games:
+        line = f"{g['id']}|{g['nama_game']}|{g['genre']}|{g['rating']}|{g['total_rating']}|{g['jumlah_rating']}|{g['played']}|{g['downloads']}\n"
+        data.append(line)
+
+    write_file("games.txt", data)
+
+
+# =========================
+# ADMIN MENU
+# =========================
 def admin_menu():
     while True:
-        print("\n1. Tambah\n2. Update\n3. Delete\n4. Lihat\n5. Kembali")
+        print("\n1. Tambah")
+        print("2. Update")
+        print("3. Delete")
+        print("4. Lihat")
+        print("5. Kembali")
+
         pilih = input("Pilih: ")
 
         if pilih == "1":
@@ -17,15 +65,23 @@ def admin_menu():
             lihat()
         elif pilih == "5":
             break
+        else:
+            print("Pilihan tidak valid!")
 
 
+# =========================
+# TAMBAH GAME
+# =========================
 def tambah():
-    games = load_data(FILE_GAMES, [])
+    games = load_games()
+
     nama = input("Nama: ")
     genre = input("Genre: ")
 
+    new_id = len(games) + 1
+
     games.append({
-        "id": len(games) + 1,
+        "id": new_id,
         "nama_game": nama,
         "genre": genre,
         "rating": 0,
@@ -35,31 +91,68 @@ def tambah():
         "downloads": 0
     })
 
-    save_data(FILE_GAMES, games)
+    save_games(games)
+    print("✅ Game berhasil ditambahkan!")
 
 
+# =========================
+# UPDATE GAME
+# =========================
 def update():
-    games = load_data(FILE_GAMES, [])
+    games = load_games()
+
+    if not games:
+        print("Belum ada game.")
+        return
 
     for i, g in enumerate(games, 1):
         print(f"{i}. {g['nama_game']}")
 
-    idx = int(input("Pilih: ")) - 1
-    games[idx]["nama_game"] = input("Nama baru: ")
-    save_data(FILE_GAMES, games)
+    try:
+        idx = int(input("Pilih: ")) - 1
+        games[idx]["nama_game"] = input("Nama baru: ")
+    except:
+        print("Input salah!")
+        return
+
+    save_games(games)
+    print("✅ Game berhasil diupdate!")
 
 
+# =========================
+# DELETE GAME
+# =========================
 def delete():
-    games = load_data(FILE_GAMES, [])
+    games = load_games()
+
+    if not games:
+        print("Belum ada game.")
+        return
 
     for i, g in enumerate(games, 1):
         print(f"{i}. {g['nama_game']}")
 
-    idx = int(input("Pilih: ")) - 1
-    games.pop(idx)
-    save_data(FILE_GAMES, games)
+    try:
+        idx = int(input("Pilih: ")) - 1
+        games.pop(idx)
+    except:
+        print("Input salah!")
+        return
+
+    save_games(games)
+    print("✅ Game berhasil dihapus!")
 
 
+# =========================
+# LIHAT GAME (RAW)
+# =========================
 def lihat():
-    games = load_data(FILE_GAMES, [])
-    print(games)
+    games = load_games()
+
+    if not games:
+        print("Belum ada game.")
+        return
+
+    print("\n===== DATA GAME =====")
+    for g in games:
+        print(g)
