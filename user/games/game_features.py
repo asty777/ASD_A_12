@@ -1,62 +1,88 @@
-from database.data_manager import load_data, save_data
-
-FILE_GAMES = "database/games.txt"
-FILE_RATINGS = "database/ratings.txt"
-
+from database.utils import read_file, write_file
 
 # =========================
-# LOAD & SAVE TXT
+# LOAD & SAVE GAMES
 # =========================
-def load_games_txt():
+def load_games():
     games = []
-    try:
-        with open(FILE_GAMES, "r", encoding="utf-8") as f:
-            for line in f:
-                if not line.strip():
-                    continue  # skip baris kosong
+    data = read_file("games.txt")
 
-                parts = [p.strip() for p in line.strip().split(",")]
+    for line in data:
+        if not line.strip():
+            continue
 
-                if len(parts) != 8:
-                    print("Format salah:", parts)  # DEBUG
-                    continue
+        parts = line.strip().split("|")
 
-                try:
-                    id, nama, genre, rating, total, jumlah, played, downloads = parts
+        if len(parts) != 8:
+            continue
 
-                    games.append({
-                        "id": int(id),
-                        "nama_game": nama,
-                        "genre": genre,
-                        "rating": float(rating),
-                        "total_rating": int(total),
-                        "jumlah_rating": int(jumlah),
-                        "played": int(played),
-                        "downloads": int(downloads)
-                    })
-                except:
-                    print("Data error:", parts)
+        id, nama, genre, rating, total, jumlah, played, downloads = parts
 
-    except FileNotFoundError:
-        print("File games.txt tidak ditemukan!")
+        games.append({
+            "id": int(id),
+            "nama_game": nama,
+            "genre": genre,
+            "rating": float(rating),
+            "total_rating": int(total),
+            "jumlah_rating": int(jumlah),
+            "played": int(played),
+            "downloads": int(downloads)
+        })
 
     return games
 
-def save_games_txt(games):
-    with open(FILE_GAMES, "w") as f:
-        for g in games:
-            line = f"{g['id']},{g['nama_game']},{g['genre']},{g['rating']},{g['total_rating']},{g['jumlah_rating']},{g['played']},{g['downloads']}\n"
-            f.write(line)
+
+def save_games(games):
+    data = []
+
+    for g in games:
+        line = f"{g['id']}|{g['nama_game']}|{g['genre']}|{g['rating']}|{g['total_rating']}|{g['jumlah_rating']}|{g['played']}|{g['downloads']}\n"
+        data.append(line)
+
+    write_file("games.txt", data)
+
+
+# =========================
+# LOAD & SAVE RATINGS
+# =========================
+def load_ratings():
+    ratings = []
+    data = read_file("ratings.txt")
+
+    for line in data:
+        if not line.strip():
+            continue
+
+        id, user_id, game_id, rating = line.strip().split("|")
+
+        ratings.append({
+            "id": int(id),
+            "user_id": int(user_id),
+            "game_id": int(game_id),
+            "rating": int(rating)
+        })
+
+    return ratings
+
+
+def save_ratings(ratings):
+    data = []
+
+    for r in ratings:
+        line = f"{r['id']}|{r['user_id']}|{r['game_id']}|{r['rating']}\n"
+        data.append(line)
+
+    write_file("ratings.txt", data)
 
 
 # =========================
 # LIHAT GAME
 # =========================
 def lihat_game():
-    games = load_games_txt()
+    games = load_games()
 
     if not games:
-        print("Belum ada data game.")
+        print("Belum ada game.")
         return
 
     while True:
@@ -102,6 +128,8 @@ def filter_genre(games):
         if g["genre"] == genre:
             print(f"- {g['nama_game']} ⭐ {g['rating']}")
 
+    input("\nTekan Enter untuk kembali...")
+
 
 # =========================
 # DETAIL GAME
@@ -120,17 +148,18 @@ def detail_game(games):
     print(f"Rating: ⭐ {g['rating']}")
     print(f"Played: {g['played']}")
     print(f"Downloads: {g['downloads']}")
-    input("\nTekan Enter untuk kembali")
+
+    input("\nTekan Enter untuk kembali...")
 
 
 # =========================
 # LEADERBOARD
 # =========================
 def leaderboard():
-    games = load_games_txt()
+    games = load_games()
 
     if not games:
-        print("Belum ada data game.")
+        print("Belum ada game.")
         return
 
     print("\n=== LEADERBOARD ===")
@@ -152,6 +181,7 @@ def leaderboard():
 
     medals = ["🥇", "🥈", "🥉"]
 
+    print("\n===== HASIL =====")
     for i, g in enumerate(sorted_games[:5], 1):
         icon = medals[i-1] if i <= 3 else f"{i}."
         print(f"{icon} {g['nama_game']} - ⭐ {g['rating']}")
@@ -161,7 +191,7 @@ def leaderboard():
 # SEARCH GAME
 # =========================
 def search_game():
-    games = load_games_txt()
+    games = load_games()
 
     keyword = input("Keyword: ").lower()
     hasil = [g for g in games if keyword in g["nama_game"].lower()]
@@ -179,8 +209,8 @@ def search_game():
 # RATING GAME
 # =========================
 def rating_game(user):
-    games = load_games_txt()
-    ratings = load_data(FILE_RATINGS, [])
+    games = load_games()
+    ratings = load_ratings()
 
     keyword = input("Cari game: ").lower()
     hasil = [g for g in games if keyword in g["nama_game"].lower()]
@@ -210,6 +240,7 @@ def rating_game(user):
         print("Rating harus 1-5!")
         return
 
+    # simpan rating
     ratings.append({
         "id": len(ratings) + 1,
         "user_id": user["id"],
@@ -217,11 +248,12 @@ def rating_game(user):
         "rating": nilai
     })
 
+    # update rata-rata
     game["total_rating"] += nilai
     game["jumlah_rating"] += 1
     game["rating"] = round(game["total_rating"] / game["jumlah_rating"], 2)
 
-    save_data(FILE_RATINGS, ratings)
-    save_games_txt(games)
+    save_ratings(ratings)
+    save_games(games)
 
     print("✅ Rating berhasil!")
