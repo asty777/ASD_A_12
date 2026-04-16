@@ -43,7 +43,7 @@ def load_games_txt():
     return games
 
 def save_games_txt(games):
-    with open(FILE_GAMES, "w") as f:
+    with open(FILE_GAMES, "w", encoding="utf-8") as f:
         for g in games:
             line = f"{g['id']},{g['nama_game']},{g['genre']},{g['rating']},{g['total_rating']},{g['jumlah_rating']},{g['played']},{g['downloads']}\n"
             f.write(line)
@@ -59,25 +59,9 @@ def lihat_game():
         print("Belum ada data game.")
         return
 
-    while True:
-        print("\n===== DAFTAR GAME =====")
-        for i, g in enumerate(games, 1):
-            print(f"{i}. {g['nama_game']} - {g['genre']} - ⭐ {g['rating']}")
-
-        print("\n1. Filter Genre")
-        print("2. Lihat Detail")
-        print("3. Kembali")
-
-        pilih = input("Pilih: ")
-
-        if pilih == "1":
-            filter_genre(games)
-        elif pilih == "2":
-            detail_game(games)
-        elif pilih == "3":
-            break
-        else:
-            print("Pilihan tidak valid!")
+    print("\n===== DAFTAR GAME =====")
+    for i, g in enumerate(games, 1):
+        print(f"{i}. {g['nama_game']} - {g['genre']} - ⭐ {g['rating']}")
 
 
 # =========================
@@ -180,7 +164,7 @@ def search_game():
 # =========================
 def rating_game(user):
     games = load_games_txt()
-    ratings = load_data(FILE_RATINGS, [])
+    ratings = load_data(FILE_RATINGS, [])  # Sekarang pakai TXT
 
     keyword = input("Cari game: ").lower()
     hasil = [g for g in games if keyword in g["nama_game"].lower()]
@@ -210,6 +194,12 @@ def rating_game(user):
         print("Rating harus 1-5!")
         return
 
+    # Cek apakah user sudah pernah rating game ini
+    for r in ratings:
+        if r["user_id"] == user["id"] and r["game_id"] == game["id"]:
+            print("❌ Anda sudah pernah merating game ini!")
+            return
+
     ratings.append({
         "id": len(ratings) + 1,
         "user_id": user["id"],
@@ -221,7 +211,7 @@ def rating_game(user):
     game["jumlah_rating"] += 1
     game["rating"] = round(game["total_rating"] / game["jumlah_rating"], 2)
 
-    save_data(FILE_RATINGS, ratings)
+    save_data(FILE_RATINGS, ratings)  # Sekarang pakai TXT
     save_games_txt(games)
 
     print("✅ Rating berhasil!")
