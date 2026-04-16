@@ -45,18 +45,8 @@ def main():
 
         # admin menu
         elif user["role"] == "admin":
-            print("1. Admin Menu")
-            print("0. Exit")
-
-            pilih = input("Pilih menu: ").strip()
-
-            if pilih == "1":
-                admin_menu()
-            elif pilih == "0":
-                print("\nTerima kasih 🎮")
-                break
-            else:
-                print("Pilihan tidak valid!")
+            print("\nMasuk sebagai Admin...\n")
+            admin_menu()
 
 
 if __name__ == "__main__":
