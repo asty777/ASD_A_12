@@ -1,41 +1,5 @@
 from database.utils import read_file, write_file
 
-# tampilkan game
-def lihat():
-    games = load_games()
-
-    if not games:
-        print("Belum ada game.")
-        return
-
-    print("\n===== DATA GAME =====")
-    for g in games:
-        print(g)
-
-
-#tambah game
-def tambah():
-    games = load_games()
-
-    nama = input("Nama: ")
-    genre = input("Genre: ")
-
-    new_id = len(games) + 1
-
-    games.append({
-        "id": new_id,
-        "nama_game": nama,
-        "genre": genre,
-        "rating": 0,
-        "total_rating": 0,
-        "jumlah_rating": 0,
-        "played": 0,
-        "downloads": 0
-    })
-
-    save_games(games)
-    print("✅ Game berhasil ditambahkan!")
-
 
 def load_games():
     games = []
@@ -50,21 +14,23 @@ def load_games():
         if len(parts) != 8:
             continue
 
-        id, nama, genre, rating, total, jumlah, played, downloads = parts
+        try:
+            id, nama, genre, rating, total, jumlah, played, downloads = parts
 
-        games.append({
-            "id": int(id),
-            "nama_game": nama,
-            "genre": genre,
-            "rating": float(rating),
-            "total_rating": int(total),
-            "jumlah_rating": int(jumlah),
-            "played": int(played),
-            "downloads": int(downloads)
-        })
+            games.append({
+                "id": int(id),
+                "nama_game": nama,
+                "genre": genre,
+                "rating": float(rating),
+                "total_rating": int(total),
+                "jumlah_rating": int(jumlah),
+                "played": int(played),
+                "downloads": int(downloads)
+            })
+        except:
+            continue
 
     return games
-
 
 def save_games(games):
     data = []
@@ -74,6 +40,51 @@ def save_games(games):
         data.append(line)
 
     write_file("games.txt", data)
+
+
+# lihat game
+def lihat():
+    games = load_games()
+
+    if not games:
+        print("Belum ada game.")
+        return
+
+    print("\n===== DATA GAME =====")
+    for g in games:
+        print(f"{g['id']}. {g['nama_game']} | {g['genre']} | ⭐ {g['rating']}")
+
+
+# tambah game
+def tambah():
+    games = load_games()
+
+    nama = input("Nama game: ").strip()
+    genre = input("Genre: ").strip()
+
+    if not nama or not genre:
+        print("Input tidak boleh kosong!")
+        return
+
+    # ambil ID terbesar
+    if games:
+        new_id = max(g["id"] for g in games) + 1
+    else:
+        new_id = 1
+
+    games.append({
+        "id": new_id,
+        "nama_game": nama,
+        "genre": genre,
+        "rating": 0,
+        "total_rating": 0,
+        "jumlah_rating": 0,
+        "played": 0,
+        "downloads": 0
+    })
+
+    save_games(games)
+    print("Game berhasil ditambahkan!")
 
 
 # update game
@@ -88,14 +99,25 @@ def update():
         print(f"{i}. {g['nama_game']}")
 
     try:
-        idx = int(input("Pilih: ")) - 1
-        games[idx]["nama_game"] = input("Nama baru: ")
-    except:
-        print("Input salah!")
-        return
+        idx = int(input("Pilih nomor: ")) - 1
 
-    save_games(games)
-    print("✅ Game berhasil diupdate!")
+        if idx < 0 or idx >= len(games):
+            print("Pilihan tidak valid!")
+            return
+
+        nama_baru = input("Nama baru: ").strip()
+
+        if not nama_baru:
+            print("Nama tidak boleh kosong!")
+            return
+
+        games[idx]["nama_game"] = nama_baru
+
+        save_games(games)
+        print("Game berhasil diupdate!")
+
+    except ValueError:
+        print("Input harus angka!")
 
 
 # hapus game
@@ -110,21 +132,31 @@ def delete():
         print(f"{i}. {g['nama_game']}")
 
     try:
-        idx = int(input("Pilih: ")) - 1
+        idx = int(input("Pilih nomor: ")) - 1
+
+        if idx < 0 or idx >= len(games):
+            print("Pilihan tidak valid!")
+            return
+
+        konfirmasi = input("Yakin mau hapus? (y/n): ").lower()
+        if konfirmasi != "y":
+            print("Dibatalkan.")
+            return
+
         games.pop(idx)
-    except:
-        print("Input salah!")
-        return
+        save_games(games)
 
-    save_games(games)
-    print("✅ Game berhasil dihapus!")
+        print("Game berhasil dihapus!")
+
+    except ValueError:
+        print("input harus angka!")
 
 
-
-#menu 
+#menu
 def admin_menu():
     while True:
-        print("\n1. Tambah Game")
+        print("\n===== MENU ADMIN =====")
+        print("1. Tambah Game")
         print("2. Update Game")
         print("3. Delete Game")
         print("4. Lihat Game")
@@ -141,6 +173,7 @@ def admin_menu():
         elif pilih == "4":
             lihat()
         elif pilih == "5":
+            print("Keluar...")
             break
         else:
             print("Pilihan tidak valid!")
