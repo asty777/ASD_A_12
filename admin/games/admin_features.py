@@ -42,9 +42,7 @@ def save_games(games):
     write_file("games.txt", data)
 
 
-# =========================
-# ADMIN MENU
-# =========================
+#menu 
 def admin_menu():
     while True:
         print("\n1. Tambah Game")
@@ -69,9 +67,7 @@ def admin_menu():
             print("Pilihan tidak valid!")
 
 
-# =========================
-# TAMBAH GAME
-# =========================
+#tambah game
 def tambah():
     games = load_games()
 
@@ -95,9 +91,7 @@ def tambah():
     print("✅ Game berhasil ditambahkan!")
 
 
-# =========================
-# UPDATE GAME
-# =========================
+# update game
 def update():
     games = load_games()
 
@@ -119,9 +113,7 @@ def update():
     print("✅ Game berhasil diupdate!")
 
 
-# =========================
-# DELETE GAME
-# =========================
+# hapus game
 def delete():
     games = load_games()
 
@@ -143,9 +135,7 @@ def delete():
     print("✅ Game berhasil dihapus!")
 
 
-# =========================
-# LIHAT GAME (RAW)
-# =========================
+# tampilkan game
 def lihat():
     games = load_games()
 
