@@ -97,16 +97,12 @@ def lihat():
         pause()
         return
 
-<<<<<<< HEAD
     print_header("DAFTAR GAME", "📋")
     
     # tabel
     print(f"\n{Colors.BOLD}{Colors.CYAN}ID  | Nama Game{' ' * 20} | Genre{' ' * 10} | Rating{Colors.RESET}")
     print(f"{Colors.YELLOW}{'-'*55}{Colors.RESET}")
     
-=======
-    print("\n===== GAME =====")
->>>>>>> 60b0ea8ee8d5b11fecfe4ed71325d583a9d0e8a0
     for g in games:
         rating_star = "★" * int(g['rating']) if g['rating'] > 0 else "★ 0"
         print(f"{Colors.GREEN}{g['id']:3}{Colors.RESET} | {g['nama_game']:<25} | {g['genre']:<15} | {rating_star} {g['rating']}")

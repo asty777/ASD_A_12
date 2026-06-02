@@ -122,7 +122,7 @@ def main():
                 print_header("BERI RATING")
                 rating_game(user)
             elif pilih == "0":
-                (cls)
+                cls()
                 print_success("\nTerima kasih atas waktunya! Sampai jumpa lagi!!")
                 print(f"{Colors.CYAN}{'='*50}{Colors.RESET}")
                 break

@@ -106,33 +106,9 @@ def save_games(games):
 
     write_file(FILE_GAMES, data)
 
-<<<<<<< HEAD
 # =========================
 # LOAD & SAVE RATINGS
 # =========================
-=======
-
-
-# def load_ratings():
-#     ratings = []
-#     data = read_file(FILE_RATINGS)
-
-#     for line in data:
-#         if not line.strip():
-#             continue
-
-#         id, user_id, game_id, rating = line.strip().split("|")
-
-#         ratings.append({
-#             "id": int(id),
-#             "user_id": int(user_id),
-#             "game_id": int(game_id),
-#             "rating": int(rating)
-#         })
-
-#     return ratings
-
->>>>>>> 60b0ea8ee8d5b11fecfe4ed71325d583a9d0e8a0
 def load_ratings():
     ratings = []
     data = read_file(FILE_RATINGS)
@@ -162,14 +138,9 @@ def save_ratings(ratings):
 
     write_file(FILE_RATINGS, data)
 
-<<<<<<< HEAD
 # =========================
 # LIHAT GAME
 # =========================
-=======
-
-
->>>>>>> 60b0ea8ee8d5b11fecfe4ed71325d583a9d0e8a0
 def lihat_game():
     cls()
     games = load_games()
@@ -264,7 +235,6 @@ def detail_game(games):
         pause()
         return
 
-<<<<<<< HEAD
     cls()
     print_header(f"DETAIL {g['nama_game'].upper()}", "📖")
     print_game_card(g, show_detail=True)
@@ -273,31 +243,6 @@ def detail_game(games):
 # =========================
 # LEADERBOARD
 # =========================
-=======
-    print("\n===== DETAIL GAME =====")
-    print(f"Nama: {g['nama_game']}")
-    print(f"Genre: {g['genre']}")
-    print(f"Rating: ⭐ {g['rating']}")
-    print(f"Played: {g['played']}")
-    print(f"Downloads: {g['downloads']}")
-
-    ratings = load_ratings()
-
-    print("\n===== REVIEW USER =====")
-
-    ada_review = False
-
-    for r in ratings:
-        if r["game_id"] == g["id"] and r["comment"] != "-":
-            ada_review = True
-            print(f"⭐ {r['rating']} | {r['comment']}")
-
-    if not ada_review:
-        print("Belum ada review.")
-
-    input("\nTekan Enter untuk kembali...")
-
->>>>>>> 60b0ea8ee8d5b11fecfe4ed71325d583a9d0e8a0
 def leaderboard():
     cls()
     games = load_games()
@@ -307,44 +252,33 @@ def leaderboard():
         pause()
         return
 
-<<<<<<< HEAD
     print_header("LEADERBOARD")
     
     print(f"\n{Colors.BOLD}Pilih Kategori:{Colors.RESET}")
     print(f"  {Colors.GREEN}1.{Colors.RESET} Top Rating")
     print(f"  {Colors.GREEN}2.{Colors.RESET} Most Played")
     print(f"  {Colors.GREEN}3.{Colors.RESET} Most Downloaded")
-=======
-    print("\n=== LEADERBOARD ===")
-    print("1. Top Rating")
-    # print("2. Most Played")
-    # print("3. Most Downloaded")
->>>>>>> 60b0ea8ee8d5b11fecfe4ed71325d583a9d0e8a0
 
     pilih = input(f"\n{Colors.BOLD}{Colors.YELLOW} Pilih: {Colors.RESET}").strip()
 
     if pilih == "1":
         sorted_games = sorted(games, key=lambda x: x["rating"], reverse=True)
         title = "TOP RATING"
-        icon = "🏆"
     elif pilih == "2":
         sorted_games = sorted(games, key=lambda x: x["played"], reverse=True)
         title = "MOST PLAYED"
-        icon = "🎮"
     elif pilih == "3":
         sorted_games = sorted(games, key=lambda x: x["downloads"], reverse=True)
         title = "MOST DOWNLOADED"
-        icon = "📥"
     else:
         print_error("Pilihan tidak valid!")
         pause()
         return
 
     cls()
-    print_header(f"{title} LEADERBOARD", icon)
+    print_header(f"{title} LEADERBOARD")
     
     medals = ["🥇", "🥈", "🥉"]
-<<<<<<< HEAD
     
     print(f"\n{Colors.BOLD}{'#'*55}{Colors.RESET}")
     
@@ -368,14 +302,6 @@ def leaderboard():
     
     print(f"{Colors.BOLD}{'#'*55}{Colors.RESET}")
     pause()
-=======
-
-    print("\n===== Leaderboard top rating =====")
-    for i, g in enumerate(sorted_games[:5], 1):
-        icon = medals[i-1] if i <= 3 else f"{i}."
-        print(f"{icon} {g['nama_game']} - ⭐ {g['rating']}")
-
->>>>>>> 60b0ea8ee8d5b11fecfe4ed71325d583a9d0e8a0
 
 
 def search_game():
@@ -485,18 +411,10 @@ def rating_game(user):
     new_id = max([r["id"] for r in ratings]) + 1 if ratings else 1
     
     ratings.append({
-<<<<<<< HEAD
         "id": new_id,
         "user_id": user["id"],
         "game_id": game["id"],
         "rating": nilai
-=======
-    "id": len(ratings) + 1,
-    "user_id": user["id"],
-    "game_id": game["id"],
-    "rating": nilai,
-    "comment": comment
->>>>>>> 60b0ea8ee8d5b11fecfe4ed71325d583a9d0e8a0
     })
 
 
