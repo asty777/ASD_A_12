@@ -220,15 +220,15 @@ def filter_genre(games):
 def detail_game(games):
     cls()
     print_header("DETAIL GAME")
-    
+
     try:
         idx = int(input(f"{Colors.YELLOW}Nomor game: {Colors.RESET}")) - 1
-        
+
         if idx < 0 or idx >= len(games):
             print_error("Nomor game tidak valid!")
             pause()
             return
-            
+
         g = games[idx]
     except:
         print_error("Input salah!")
@@ -238,6 +238,33 @@ def detail_game(games):
     cls()
     print_header(f"DETAIL {g['nama_game'].upper()}", "📖")
     print_game_card(g, show_detail=True)
+
+    # =========================
+    # review
+    # =========================
+    ratings = load_ratings()
+
+    print(f"\n{Colors.BLUE}💬 {Colors.BOLD}REVIEW USER{Colors.RESET}")
+    print(f"{Colors.CYAN}{'─'*50}{Colors.RESET}")
+
+    ada_review = False
+
+    for r in ratings:
+        if r["game_id"] == g["id"] and r["comment"] != "-":
+            ada_review = True
+
+            stars = "★" * r["rating"]
+
+            print(
+                f"{Colors.YELLOW}{stars}{Colors.RESET} "
+                f"({r['rating']}/5)"
+            )
+            print(f"   📝 {r['comment']}")
+            print()
+
+    if not ada_review:
+        print_info("Belum ada review untuk game ini.")
+
     pause()
 
 # =========================
@@ -414,7 +441,8 @@ def rating_game(user):
         "id": new_id,
         "user_id": user["id"],
         "game_id": game["id"],
-        "rating": nilai
+        "rating": nilai,
+        "comment": comment,
     })
 
 
