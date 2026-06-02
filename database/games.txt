@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 1|minecraft|adventure|0|0|0|0|0
 2|valorant|fps|0|0|0|0|0
 3|mobile_legends|moba|0|0|0|0|0
