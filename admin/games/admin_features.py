@@ -248,16 +248,19 @@ def update():
 
         game_lama = games[idx]["nama_game"]
 
+        print_info(f"Nama saat ini: {games[idx]['nama_game']}")
+
         nama_baru = input(
-            f"{Colors.CYAN}Nama Baru: {Colors.RESET}"
+            f"{Colors.CYAN}Nama Baru (kosongkan jika tidak diubah): {Colors.RESET}"
         ).strip()
 
         if not nama_baru:
-            print_error("Nama tidak boleh kosong!")
-            pause()
-            return
+            nama_baru = games[idx]["nama_game"]
+
+        print_info(f"Genre saat ini: {games[idx]['genre']}")
 
         print("\nPilih Genre Baru:")
+        print("0. Tidak diubah")
 
         for i, genre in enumerate(GENRE_LIST, start=1):
             print(f"{i}. {genre}")
@@ -268,13 +271,17 @@ def update():
             )
         )
 
-        if genre_idx < 1 or genre_idx > len(GENRE_LIST):
+        if genre_idx == 0:
+            genre_baru = games[idx]["genre"]
+
+        elif 1 <= genre_idx <= len(GENRE_LIST):
+            genre_baru = GENRE_LIST[genre_idx - 1]
+
+        else:
             print_error("Genre tidak valid!")
             pause()
             return
-
-        genre_baru = GENRE_LIST[genre_idx - 1]
-
+        
         games[idx]["nama_game"] = nama_baru
         games[idx]["genre"] = genre_baru
 
