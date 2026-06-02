@@ -46,7 +46,6 @@ def print_warning(text):
 def print_info(text):
     print(f"{Colors.CYAN}{text}{Colors.RESET}")
 
-
 def print_admin_box(title, options):
     print(f"\n{Colors.RED}{'═' * 50}{Colors.RESET}")
     print(f"{Colors.BOLD}{Colors.YELLOW}{title.center(50)}{Colors.RESET}")
