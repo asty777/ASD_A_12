@@ -1,8 +1,73 @@
 from database.utils import read_file, write_file
+from my_clear import cls  # import cls untuk bersihkan layar
+
+class Colors:
+    HEADER = '\033[95m'
+    BLUE = '\033[94m'
+    CYAN = '\033[96m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    RED = '\033[91m'
+    RESET = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
 
 FILE_GAMES = "games.txt"
 FILE_RATINGS = "ratings.txt"
 
+# Fungsi helper untuk UI
+def print_header(text, icon="✨"):
+    """Menampilkan header section dengan icon"""
+    print(f"\n{Colors.BLUE}{icon} {Colors.BOLD}{text}{Colors.RESET}")
+    print(f"{Colors.CYAN}{'─'*50}{Colors.RESET}")
+
+def print_success(text):
+    """Menampilkan pesan sukses"""
+    print(f"{Colors.GREEN}✅ {text}{Colors.RESET}")
+
+def print_error(text):
+    """Menampilkan pesan error"""
+    print(f"{Colors.RED}❌ {text}{Colors.RESET}")
+
+def print_warning(text):
+    """Menampilkan pesan warning"""
+    print(f"{Colors.YELLOW}⚠️ {text}{Colors.RESET}")
+
+def print_info(text):
+    """Menampilkan pesan info"""
+    print(f"{Colors.CYAN}ℹ️ {text}{Colors.RESET}")
+
+def print_game_card(game, show_detail=False):
+    """Menampilkan game dalam format kartu"""
+    medal = ""
+    if game['rating'] >= 4.5:
+        medal = "🏆"
+    elif game['rating'] >= 4.0:
+        medal = "⭐"
+    elif game['rating'] >= 3.0:
+        medal = "👍"
+    elif game['rating'] > 0:
+        medal = "📈"
+    else:
+        medal = "🆕"
+    
+    rating_star = "⭐" * int(game['rating']) if game['rating'] > 0 else "⏳"
+    
+    print(f"\n{Colors.CYAN}┌{'─'*48}┐{Colors.RESET}")
+    print(f"{Colors.CYAN}│{Colors.RESET} {Colors.BOLD}{medal} {game['nama_game']}{Colors.RESET}{' ' * (40 - len(game['nama_game']))}{Colors.CYAN}│{Colors.RESET}")
+    print(f"{Colors.CYAN}├{'─'*48}┤{Colors.RESET}")
+    print(f"{Colors.CYAN}│{Colors.RESET} Genre: {game['genre']}{' ' * (38 - len(game['genre']))}{Colors.CYAN}│{Colors.RESET}")
+    print(f"{Colors.CYAN}│{Colors.RESET} Rating: {rating_star} {game['rating']}{' ' * (30 - len(str(game['rating'])) - len(rating_star))}{Colors.CYAN}│{Colors.RESET}")
+    
+    if show_detail:
+        print(f"{Colors.CYAN}│{Colors.RESET} Played: {game['played']:,} kali{' ' * (28 - len(str(game['played'])))} {Colors.CYAN}│{Colors.RESET}")
+        print(f"{Colors.CYAN}│{Colors.RESET} Downloads: {game['downloads']:,}{' ' * (26 - len(str(game['downloads'])))} {Colors.CYAN}│{Colors.RESET}")
+    
+    print(f"{Colors.CYAN}└{'─'*48}┘{Colors.RESET}")
+
+def pause():
+    """Jeda sampai user tekan Enter"""
+    input(f"\n{Colors.CYAN}Tekan Enter untuk melanjutkan...{Colors.RESET}")
 
 # =========================
 # LOAD & SAVE GAMES
@@ -35,7 +100,6 @@ def load_games():
 
     return games
 
-
 def save_games(games):
     data = []
 
@@ -44,7 +108,6 @@ def save_games(games):
         data.append(line)
 
     write_file(FILE_GAMES, data)
-
 
 # =========================
 # LOAD & SAVE RATINGS
@@ -68,7 +131,6 @@ def load_ratings():
 
     return ratings
 
-
 def save_ratings(ratings):
     data = []
 
@@ -78,27 +140,37 @@ def save_ratings(ratings):
 
     write_file(FILE_RATINGS, data)
 
-
 # =========================
 # LIHAT GAME
 # =========================
 def lihat_game():
+    cls()
     games = load_games()
 
     if not games:
-        print("Belum ada data game.")
+        print_warning("Belum ada data game.")
+        pause()
         return
 
     while True:
-        print("\n===== DAFTAR GAME =====")
+        cls()
+        print_header("DAFTAR GAME")
+        
+        # Tampilan grid game yang rapi
+        print(f"\n{Colors.BOLD}{Colors.CYAN}No  | Nama Game{' ' * 25} | Genre{' ' * 12} | Rating{Colors.RESET}")
+        print(f"{Colors.YELLOW}{'─'*65}{Colors.RESET}")
+        
         for i, g in enumerate(games, 1):
-            print(f"{i}. {g['nama_game']} - {g['genre']} - ⭐ {g['rating']}")
+            rating_display = f"{'★' * int(g['rating'])} {g['rating']}" if g['rating'] > 0 else "Belum ada"
+            print(f"{Colors.GREEN}{i:3}{Colors.RESET} | {g['nama_game']:<30} | {g['genre']:<15} | {rating_display}")
+        
+        print(f"\n{Colors.YELLOW}{'─'*65}{Colors.RESET}")
+        print("\n Menu:")
+        print(f"  {Colors.GREEN}1.{Colors.RESET} Filter Genre")
+        print(f"  {Colors.GREEN}2.{Colors.RESET} Lihat Detail")
+        print(f"  {Colors.GREEN}3.{Colors.RESET} Kembali")
 
-        print("\n1. Filter Genre")
-        print("2. Lihat Detail")
-        print("3. Kembali")
-
-        pilih = input("Pilih: ")
+        pilih = input(f"\n{Colors.BOLD}{Colors.YELLOW} Pilih: {Colors.RESET}").strip()
 
         if pilih == "1":
             filter_genre(games)
@@ -107,151 +179,248 @@ def lihat_game():
         elif pilih == "3":
             break
         else:
-            print("Pilihan tidak valid!")
-
+            print_error("Pilihan tidak valid!")
+            pause()
 
 # =========================
 # FILTER GENRE
 # =========================
 def filter_genre(games):
-    genre_list = list(set([g["genre"] for g in games]))
+    cls()
+    genre_list = sorted(list(set([g["genre"] for g in games])))
 
-    print("\n===== PILIH GENRE =====")
+    print_header("FILTER BERDASARKAN GENRE")
+    
+    print(f"\n{Colors.BOLD}Genre Tersedia:{Colors.RESET}")
     for i, g in enumerate(genre_list, 1):
-        print(f"{i}. {g}")
+        print(f"  {Colors.GREEN}{i}.{Colors.RESET} {g}")
 
     try:
-        pilih = int(input("Pilih: ")) - 1
+        pilih = int(input(f"\n{Colors.YELLOW}Pilih genre: {Colors.RESET}")) - 1
+        if pilih < 0 or pilih >= len(genre_list):
+            print_error("Pilihan tidak valid!")
+            pause()
+            return
         genre = genre_list[pilih]
     except:
-        print("Input salah!")
+        print_error("Input salah!")
+        pause()
         return
 
-    print(f"\n=== GAME GENRE {genre} ===")
-    for g in games:
-        if g["genre"] == genre:
-            print(f"- {g['nama_game']} ⭐ {g['rating']}")
-
-    input("\nTekan Enter untuk kembali...")
-
+    cls()
+    print_header(f"GAME GENRE {genre.upper()}")
+    
+    hasil = [g for g in games if g["genre"] == genre]
+    
+    if not hasil:
+        print_warning(f"Tidak ada game dengan genre {genre}")
+    else:
+        for g in hasil:
+            print_game_card(g, show_detail=False)
+    
+    pause()
 
 # =========================
 # DETAIL GAME
 # =========================
 def detail_game(games):
+    cls()
+    print_header("DETAIL GAME")
+    
     try:
-        idx = int(input("Nomor game: ")) - 1
+        idx = int(input(f"{Colors.YELLOW}Nomor game: {Colors.RESET}")) - 1
+        
+        if idx < 0 or idx >= len(games):
+            print_error("Nomor game tidak valid!")
+            pause()
+            return
+            
         g = games[idx]
     except:
-        print("Input salah!")
+        print_error("Input salah!")
+        pause()
         return
 
-    print("\n===== DETAIL GAME =====")
-    print(f"Nama: {g['nama_game']}")
-    print(f"Genre: {g['genre']}")
-    print(f"Rating: ⭐ {g['rating']}")
-    print(f"Played: {g['played']}")
-    print(f"Downloads: {g['downloads']}")
-
-    input("\nTekan Enter untuk kembali...")
-
+    cls()
+    print_header(f"DETAIL {g['nama_game'].upper()}", "📖")
+    print_game_card(g, show_detail=True)
+    pause()
 
 # =========================
 # LEADERBOARD
 # =========================
 def leaderboard():
+    cls()
     games = load_games()
 
     if not games:
-        print("Belum ada data game.")
+        print_warning("Belum ada data game.")
+        pause()
         return
 
-    print("\n=== LEADERBOARD ===")
-    print("1. Top Rating")
-    print("2. Most Played")
-    print("3. Most Downloaded")
+    print_header("LEADERBOARD")
+    
+    print(f"\n{Colors.BOLD}Pilih Kategori:{Colors.RESET}")
+    print(f"  {Colors.GREEN}1.{Colors.RESET} Top Rating")
+    print(f"  {Colors.GREEN}2.{Colors.RESET} Most Played")
+    print(f"  {Colors.GREEN}3.{Colors.RESET} Most Downloaded")
 
-    pilih = input("Pilih: ")
+    pilih = input(f"\n{Colors.BOLD}{Colors.YELLOW} Pilih: {Colors.RESET}").strip()
 
     if pilih == "1":
         sorted_games = sorted(games, key=lambda x: x["rating"], reverse=True)
+        title = "TOP RATING"
+        icon = "🏆"
     elif pilih == "2":
         sorted_games = sorted(games, key=lambda x: x["played"], reverse=True)
+        title = "MOST PLAYED"
+        icon = "🎮"
     elif pilih == "3":
         sorted_games = sorted(games, key=lambda x: x["downloads"], reverse=True)
+        title = "MOST DOWNLOADED"
+        icon = "📥"
     else:
-        print("Pilihan tidak valid!")
+        print_error("Pilihan tidak valid!")
+        pause()
         return
 
+    cls()
+    print_header(f"{title} LEADERBOARD", icon)
+    
     medals = ["🥇", "🥈", "🥉"]
-
-    print("\n===== HASIL =====")
-    for i, g in enumerate(sorted_games[:5], 1):
-        icon = medals[i-1] if i <= 3 else f"{i}."
-        print(f"{icon} {g['nama_game']} - ⭐ {g['rating']}")
-
+    
+    print(f"\n{Colors.BOLD}{'#'*55}{Colors.RESET}")
+    
+    for i, g in enumerate(sorted_games[:10], 1):  # Tampilkan top 10
+        if i <= 3:
+            rank = f"{medals[i-1]}"
+        else:
+            rank = f"{i:2}."
+        
+        # Baris leaderboard yang rapi
+        rating_star = "★" * int(g['rating']) if g['rating'] > 0 else "⏳"
+        
+        if pilih == "1":
+            value_display = f"{rating_star} {g['rating']}"
+        elif pilih == "2":
+            value_display = f" {g['played']:,} kali"
+        else:
+            value_display = f" {g['downloads']:,}"
+        
+        print(f"{Colors.YELLOW}{rank}{Colors.RESET} {Colors.CYAN}{g['nama_game']:<30}{Colors.RESET} {value_display}")
+    
+    print(f"{Colors.BOLD}{'#'*55}{Colors.RESET}")
+    pause()
 
 # =========================
 # SEARCH GAME
 # =========================
 def search_game():
+    cls()
     games = load_games()
-
-    keyword = input("Keyword: ").lower()
+    
+    print_header("PENCARIAN GAME")
+    
+    keyword = input(f"{Colors.CYAN} Masukkan keyword: {Colors.RESET}").lower()
+    
+    if not keyword:
+        print_warning("Keyword tidak boleh kosong!")
+        pause()
+        return
+    
     hasil = [g for g in games if keyword in g["nama_game"].lower()]
 
     if not hasil:
-        print("Game tidak ditemukan.")
+        print_warning(f"Game dengan keyword '{keyword}' tidak ditemukan.")
+        pause()
         return
 
-    print("\n=== HASIL PENCARIAN ===")
+    cls()
+    print_header(f"HASIL PENCARIAN: '{keyword}'")
+    print_info(f"Ditemukan {len(hasil)} game")
+    
     for g in hasil:
-        print(f"{g['nama_game']} - ⭐ {g['rating']}")
-
+        print_game_card(g, show_detail=False)
+    
+    pause()
 
 # =========================
 # RATING GAME
 # =========================
 def rating_game(user):
+    cls()
     games = load_games()
     ratings = load_ratings()
 
-    keyword = input("Cari game: ").lower()
+    print_header("BERI RATING GAME", "★")
+    
+    keyword = input(f"{Colors.CYAN}🔎 Cari game: {Colors.RESET}").lower()
+    
+    if not keyword:
+        print_warning("Keyword tidak boleh kosong!")
+        pause()
+        return
+    
     hasil = [g for g in games if keyword in g["nama_game"].lower()]
 
     if not hasil:
-        print("Game tidak ditemukan")
+        print_warning(f"Game dengan keyword '{keyword}' tidak ditemukan")
+        pause()
         return
 
-    print("\n=== PILIH GAME ===")
+    cls()
+    print_header("PILIH GAME")
+    
     for i, g in enumerate(hasil, 1):
-        print(f"{i}. {g['nama_game']}")
+        print(f"  {Colors.GREEN}{i}.{Colors.RESET} {g['nama_game']} - {g['genre']} (★ {g['rating']})")
 
     try:
-        pilih = int(input("Pilih: ")) - 1
+        pilih = int(input(f"\n{Colors.YELLOW}Pilih game: {Colors.RESET}")) - 1
+        
+        if pilih < 0 or pilih >= len(hasil):
+            print_error("Pilihan tidak valid!")
+            pause()
+            return
+            
         game = hasil[pilih]
     except:
-        print("Input salah!")
+        print_error("Input harus angka!")
+        pause()
         return
 
+    cls()
+    print_header(f"BERI RATING - {game['nama_game']}", "★")
+    
+    # Tampilkan rating yang tersedia dengan visual
+    print(f"\n{Colors.BOLD}Pilih Rating:{Colors.RESET}")
+    for i in range(1, 6):
+        stars = "★" * i
+        print(f"  {Colors.GREEN}{i}.{Colors.RESET} {stars} - {i} bintang")
+    
     try:
-        nilai = int(input("Rating (1-5): "))
+        nilai = int(input(f"\n{Colors.YELLOW}Rating (1-5): {Colors.RESET}"))
     except:
-        print("Harus angka!")
+        print_error("Harus angka!")
+        pause()
         return
 
     if nilai < 1 or nilai > 5:
-        print("Rating harus 1-5!")
+        print_error("Rating harus 1-5!")
+        pause()
         return
 
     # cek sudah rating atau belum
     for r in ratings:
         if r["user_id"] == user["id"] and r["game_id"] == game["id"]:
-            print("❌ Anda sudah pernah merating game ini!")
+            print_error("Anda sudah pernah merating game ini!")
+            pause()
             return
 
+    # Tambah rating
+    new_id = max([r["id"] for r in ratings]) + 1 if ratings else 1
+    
     ratings.append({
-        "id": len(ratings) + 1,
+        "id": new_id,
         "user_id": user["id"],
         "game_id": game["id"],
         "rating": nilai
@@ -265,4 +434,8 @@ def rating_game(user):
     save_ratings(ratings)
     save_games(games)
 
-    print("✅ Rating berhasil!")
+    # buat konfirmasi
+    stars_given = "★" * nilai
+    print_success(f"Rating {stars_given} ({nilai}) berhasil diberikan untuk '{game['nama_game']}'!")
+    print_info(f"Rating baru game: {'★' * int(game['rating'])} {game['rating']}")
+    pause()
