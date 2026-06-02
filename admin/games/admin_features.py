@@ -1,6 +1,7 @@
 from database.utils import read_file, write_file
-from my_clear import cls 
+from my_clear import cls
 
+# WARNA TERMINAL
 class Colors:
     HEADER = '\033[95m'
     BLUE = '\033[94m'
@@ -12,41 +13,57 @@ class Colors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+# DATA GENRE
+GENRE_LIST = [
+    "Action",
+    "Adventure",
+    "RPG",
+    "Strategy",
+    "Simulation",
+    "Sports",
+    "Racing",
+    "Puzzle"
+]
+
+# UTILITIES
 def print_header(text, icon="🔧"):
-    """Menampilkan header section"""
     print(f"\n{Colors.BLUE}{icon} {Colors.BOLD}{text}{Colors.RESET}")
-    print(f"{Colors.CYAN}{'─'*40}{Colors.RESET}")
+    print(f"{Colors.CYAN}{'─' * 50}{Colors.RESET}")
+
 
 def print_success(text):
-    """Menampilkan pesan sukses"""
     print(f"{Colors.GREEN}{text}{Colors.RESET}")
 
+
 def print_error(text):
-    """Menampilkan pesan error"""
     print(f"{Colors.RED}{text}{Colors.RESET}")
 
+
 def print_warning(text):
-    """Menampilkan pesan warning"""
     print(f"{Colors.YELLOW}{text}{Colors.RESET}")
 
+
 def print_info(text):
-    """Menampilkan pesan info"""
     print(f"{Colors.CYAN}{text}{Colors.RESET}")
 
+
 def print_admin_box(title, options):
-    print(f"\n{Colors.RED}{'═'*50}{Colors.RESET}")
-    print(f"{Colors.BOLD}{Colors.YELLOW}{title}{Colors.RESET}")
-    print(f"{Colors.RED}{'═'*50}{Colors.RESET}")
-    
+    print(f"\n{Colors.RED}{'═' * 50}{Colors.RESET}")
+    print(f"{Colors.BOLD}{Colors.YELLOW}{title.center(50)}{Colors.RESET}")
+    print(f"{Colors.RED}{'═' * 50}{Colors.RESET}")
+
     for key, value in options.items():
         print(f"  {Colors.GREEN}{key}.{Colors.RESET} {value}")
-    
-    print(f"{Colors.RED}{'═'*50}{Colors.RESET}")
+
+    print(f"{Colors.RED}{'═' * 50}{Colors.RESET}")
+
 
 def pause():
-    """Jeda sampai user tekan Enter"""
-    input(f"\n{Colors.CYAN}Tekan Enter untuk melanjutkan...{Colors.RESET}")
+    input(
+        f"\n{Colors.CYAN}Tekan Enter untuk melanjutkan...{Colors.RESET}"
+    )
 
+# LOAD & SAVE
 def load_games():
     games = []
     data = read_file("games.txt")
@@ -61,10 +78,10 @@ def load_games():
             continue
 
         try:
-            id, nama, genre, rating, total, jumlah, played, downloads = parts
+            game_id, nama, genre, rating, total, jumlah, played, downloads = parts
 
             games.append({
-                "id": int(id),
+                "id": int(game_id),
                 "nama_game": nama,
                 "genre": genre,
                 "rating": float(rating),
@@ -73,23 +90,35 @@ def load_games():
                 "played": int(played),
                 "downloads": int(downloads)
             })
-        except:
+
+        except ValueError:
             continue
 
     return games
+
 
 def save_games(games):
     data = []
 
     for g in games:
-        line = f"{g['id']}|{g['nama_game']}|{g['genre']}|{g['rating']}|{g['total_rating']}|{g['jumlah_rating']}|{g['played']}|{g['downloads']}\n"
-        data.append(line)
+        data.append(
+            f"{g['id']}|"
+            f"{g['nama_game']}|"
+            f"{g['genre']}|"
+            f"{g['rating']}|"
+            f"{g['total_rating']}|"
+            f"{g['jumlah_rating']}|"
+            f"{g['played']}|"
+            f"{g['downloads']}\n"
+        )
 
     write_file("games.txt", data)
 
-# lihat game
+
+
+# LIHAT GAME
 def lihat():
-    cls()  
+    cls()
     games = load_games()
 
     if not games:
@@ -98,43 +127,85 @@ def lihat():
         return
 
     print_header("DAFTAR GAME", "📋")
-    
-    # tabel
-    print(f"\n{Colors.BOLD}{Colors.CYAN}ID  | Nama Game{' ' * 20} | Genre{' ' * 10} | Rating{Colors.RESET}")
-    print(f"{Colors.YELLOW}{'-'*55}{Colors.RESET}")
-    
+
+    print(
+        f"\n{Colors.BOLD}{Colors.CYAN}"
+        f"{'ID':<5}"
+        f"{'Nama Game':<30}"
+        f"{'Genre':<15}"
+        f"{'Rating'}"
+        f"{Colors.RESET}"
+    )
+
+    print(f"{Colors.YELLOW}{'-' * 65}{Colors.RESET}")
+
     for g in games:
-        rating_star = "★" * int(g['rating']) if g['rating'] > 0 else "★ 0"
-        print(f"{Colors.GREEN}{g['id']:3}{Colors.RESET} | {g['nama_game']:<25} | {g['genre']:<15} | {rating_star} {g['rating']}")
-    
-    print(f"{Colors.YELLOW}{'-'*55}{Colors.RESET}")
+        print(
+            f"{Colors.GREEN}{g['id']:<5}{Colors.RESET}"
+            f"{g['nama_game']:<30}"
+            f"{g['genre']:<15}"
+            f"{g['rating']:.1f}"
+        )
+
+    print(f"{Colors.YELLOW}{'-' * 65}{Colors.RESET}")
     pause()
 
-# tambah game
+# TAMBAH GAME
 def tambah():
     cls()
-    print_header("TAMBAH GAME BARU", "+")
-    
+    print_header("TAMBAH GAME BARU", "➕")
+
     games = load_games()
 
-    nama = input(f"{Colors.CYAN}Nama game: {Colors.RESET}").strip()
-    genre = input(f"{Colors.CYAN} Genre: {Colors.RESET}").strip()
+    nama = input(
+        f"{Colors.CYAN}Nama Game: {Colors.RESET}"
+    ).strip()
 
-    if not nama or not genre:
-        print_error("Input tidak boleh kosong!")
+    if not nama:
+        print_error("Nama game tidak boleh kosong!")
         pause()
         return
 
-    if games:
-        new_id = max(g["id"] for g in games) + 1
-    else:
-        new_id = 1
+    for g in games:
+        if g["nama_game"].lower() == nama.lower():
+            print_error("Game sudah ada!")
+            pause()
+            return
+
+    print(f"\n{Colors.CYAN}Pilih Genre:{Colors.RESET}")
+
+    for i, genre in enumerate(GENRE_LIST, start=1):
+        print(f"{i}. {genre}")
+
+    try:
+        pilihan = int(
+            input(
+                f"\n{Colors.YELLOW}Pilih nomor genre: {Colors.RESET}"
+            )
+        )
+
+        if pilihan < 1 or pilihan > len(GENRE_LIST):
+            print_error("Pilihan tidak valid!")
+            pause()
+            return
+
+        genre = GENRE_LIST[pilihan - 1]
+
+    except ValueError:
+        print_error("Input harus berupa angka!")
+        pause()
+        return
+
+    new_id = max(
+        [g["id"] for g in games],
+        default=0
+    ) + 1
 
     games.append({
         "id": new_id,
         "nama_game": nama,
         "genre": genre,
-        "rating": 0,
+        "rating": 0.0,
         "total_rating": 0,
         "jumlah_rating": 0,
         "played": 0,
@@ -142,10 +213,11 @@ def tambah():
     })
 
     save_games(games)
+
     print_success(f"Game '{nama}' berhasil ditambahkan!")
     pause()
 
-# update game
+# UPDATE GAME
 def update():
     cls()
     games = load_games()
@@ -156,41 +228,71 @@ def update():
         return
 
     print_header("UPDATE GAME", "✎")
-    
-    print(f"\n{Colors.BOLD}Daftar Game:{Colors.RESET}")
-    for i, g in enumerate(games, 1):
-        print(f"  {Colors.GREEN}{i}.{Colors.RESET} {g['nama_game']} ({g['genre']})")
+
+    for i, g in enumerate(games, start=1):
+        print(
+            f"{Colors.GREEN}{i}.{Colors.RESET} "
+            f"{g['nama_game']} ({g['genre']})"
+        )
 
     try:
-        idx = int(input(f"\n{Colors.YELLOW}Pilih nomor game: {Colors.RESET}")) - 1
+        idx = int(
+            input(
+                f"\n{Colors.YELLOW}Pilih nomor game: {Colors.RESET}"
+            )
+        ) - 1
 
         if idx < 0 or idx >= len(games):
             print_error("Pilihan tidak valid!")
             pause()
             return
 
-        game_lama = games[idx]['nama_game']
-        print_info(f"Game lama: {game_lama}")
-        
-        nama_baru = input(f"{Colors.CYAN}Nama baru: {Colors.RESET}").strip()
+        game_lama = games[idx]["nama_game"]
+
+        nama_baru = input(
+            f"{Colors.CYAN}Nama Baru: {Colors.RESET}"
+        ).strip()
 
         if not nama_baru:
             print_error("Nama tidak boleh kosong!")
             pause()
             return
 
+        print("\nPilih Genre Baru:")
+
+        for i, genre in enumerate(GENRE_LIST, start=1):
+            print(f"{i}. {genre}")
+
+        genre_idx = int(
+            input(
+                f"{Colors.YELLOW}Pilih genre: {Colors.RESET}"
+            )
+        )
+
+        if genre_idx < 1 or genre_idx > len(GENRE_LIST):
+            print_error("Genre tidak valid!")
+            pause()
+            return
+
+        genre_baru = GENRE_LIST[genre_idx - 1]
+
         games[idx]["nama_game"] = nama_baru
+        games[idx]["genre"] = genre_baru
 
         save_games(games)
-        print_success(f"Game '{game_lama}' berhasil diupdate menjadi '{nama_baru}'!")
+
+        print_success(
+            f"Game '{game_lama}' berhasil diupdate!"
+        )
+
         pause()
 
     except ValueError:
         print_error("Input harus angka!")
         pause()
 
-# hapus game
-def delete():
+# HAPUS GAME
+def hapus_game():
     cls()
     games = load_games()
 
@@ -199,50 +301,67 @@ def delete():
         pause()
         return
 
-    print_header("HAPUS GAME")
-    
-    print(f"\n{Colors.BOLD}Daftar Game:{Colors.RESET}")
-    for i, g in enumerate(games, 1):
-        rating_show = f"★ {g['rating']}" if g['rating'] > 0 else "Belum ada rating"
-        print(f"  {Colors.GREEN}{i}.{Colors.RESET} {g['nama_game']} - {rating_show}")
+    print_header("HAPUS GAME", "🗑️")
+
+    for i, g in enumerate(games, start=1):
+        print(
+            f"{Colors.GREEN}{i}.{Colors.RESET} "
+            f"{g['nama_game']} ({g['genre']})"
+        )
 
     try:
-        idx = int(input(f"\n{Colors.YELLOW}Pilih nomor game: {Colors.RESET}")) - 1
+        idx = int(
+            input(
+                f"\n{Colors.YELLOW}Pilih nomor game: {Colors.RESET}"
+            )
+        ) - 1
 
         if idx < 0 or idx >= len(games):
             print_error("Pilihan tidak valid!")
             pause()
             return
 
-        game_hapus = games[idx]['nama_game']
-        
-        print_warning(f"Anda akan menghapus game '{game_hapus}'")
-        konfirmasi = input(f"{Colors.RED}Yakin? (y/n): {Colors.RESET}").lower()
-        
+        game_hapus = games[idx]["nama_game"]
+
+        konfirmasi = input(
+            f"{Colors.RED}Yakin hapus '{game_hapus}'? (y/n): "
+            f"{Colors.RESET}"
+        ).lower()
+
         if konfirmasi != "y":
             print_info("Penghapusan dibatalkan.")
             pause()
             return
 
         games.pop(idx)
+
         save_games(games)
 
-        print_success(f"Game '{game_hapus}' berhasil dihapus!")
+        print_success(
+            f"Game '{game_hapus}' berhasil dihapus!"
+        )
+
         pause()
 
     except ValueError:
         print_error("Input harus angka!")
         pause()
 
-# menu admin utama
+
+
+# MENU ADMIN
 def admin_menu():
     while True:
-        cls() 
-        
-        print(f"{Colors.RED}{'═'*50}{Colors.RESET}")
-        print(f"{Colors.BOLD}{Colors.YELLOW}  ADMIN CONTROL PANEL  {Colors.RESET}")
-        print(f"{Colors.RED}{'═'*50}{Colors.RESET}")
-        
+        cls()
+
+        print(f"{Colors.RED}{'═' * 50}{Colors.RESET}")
+        print(
+            f"{Colors.BOLD}{Colors.YELLOW}"
+            f"{'ADMIN CONTROL PANEL'.center(50)}"
+            f"{Colors.RESET}"
+        )
+        print(f"{Colors.RED}{'═' * 50}{Colors.RESET}")
+
         menu_options = {
             "1": "+ Tambah Game",
             "2": "✎ Update Game", 
@@ -250,22 +369,31 @@ def admin_menu():
             "4": "🗐 Lihat Game",
             "5": " Exit to Main Menu"
         }
-        
+
         print_admin_box("MENU ADMIN", menu_options)
-        
-        pilih = input(f"{Colors.BOLD}{Colors.YELLOW} Pilih menu: {Colors.RESET}").strip()
+
+        pilih = input(
+            f"{Colors.BOLD}{Colors.YELLOW}"
+            f"Pilih Menu: "
+            f"{Colors.RESET}"
+        ).strip()
 
         if pilih == "1":
             tambah()
+
         elif pilih == "2":
             update()
+
         elif pilih == "3":
-            delete()
+            hapus_game()
+
         elif pilih == "4":
             lihat()
+
         elif pilih == "5":
             print_success("Keluar dari Admin Panel...")
             break
+
         else:
             print_error("Pilihan tidak valid!")
-            pause()
+            pause()         
