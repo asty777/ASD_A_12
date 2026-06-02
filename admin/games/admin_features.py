@@ -50,7 +50,7 @@ def lihat():
         print("Belum ada game.")
         return
 
-    print("\n===== DATA GAME =====")
+    print("\n===== GAME =====")
     for g in games:
         print(f"{g['id']}. {g['nama_game']} | {g['genre']} | ⭐ {g['rating']}")
 

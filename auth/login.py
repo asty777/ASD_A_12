@@ -4,7 +4,6 @@ def load_users_txt():
         for line in f:
             parts = line.strip().split(",")
 
-            # pastikan format benar
             if len(parts) != 4:
                 continue
 

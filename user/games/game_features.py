@@ -4,9 +4,6 @@ FILE_GAMES = "games.txt"
 FILE_RATINGS = "ratings.txt"
 
 
-# =========================
-# LOAD & SAVE GAMES
-# =========================
 def load_games():
     games = []
     data = read_file(FILE_GAMES)
@@ -46,9 +43,26 @@ def save_games(games):
     write_file(FILE_GAMES, data)
 
 
-# =========================
-# LOAD & SAVE RATINGS
-# =========================
+
+# def load_ratings():
+#     ratings = []
+#     data = read_file(FILE_RATINGS)
+
+#     for line in data:
+#         if not line.strip():
+#             continue
+
+#         id, user_id, game_id, rating = line.strip().split("|")
+
+#         ratings.append({
+#             "id": int(id),
+#             "user_id": int(user_id),
+#             "game_id": int(game_id),
+#             "rating": int(rating)
+#         })
+
+#     return ratings
+
 def load_ratings():
     ratings = []
     data = read_file(FILE_RATINGS)
@@ -57,13 +71,14 @@ def load_ratings():
         if not line.strip():
             continue
 
-        id, user_id, game_id, rating = line.strip().split("|")
+        id, user_id, game_id, rating, comment = line.strip().split("|")
 
         ratings.append({
             "id": int(id),
             "user_id": int(user_id),
             "game_id": int(game_id),
-            "rating": int(rating)
+            "rating": int(rating),
+            "comment": comment
         })
 
     return ratings
@@ -73,15 +88,13 @@ def save_ratings(ratings):
     data = []
 
     for r in ratings:
-        line = f"{r['id']}|{r['user_id']}|{r['game_id']}|{r['rating']}\n"
+        line = f"{r['id']}|{r['user_id']}|{r['game_id']}|{r['rating']}|{r['comment']}\n"
         data.append(line)
 
     write_file(FILE_RATINGS, data)
 
 
-# =========================
-# LIHAT GAME
-# =========================
+
 def lihat_game():
     games = load_games()
 
@@ -110,9 +123,7 @@ def lihat_game():
             print("Pilihan tidak valid!")
 
 
-# =========================
-# FILTER GENRE
-# =========================
+
 def filter_genre(games):
     genre_list = list(set([g["genre"] for g in games]))
 
@@ -135,9 +146,7 @@ def filter_genre(games):
     input("\nTekan Enter untuk kembali...")
 
 
-# =========================
-# DETAIL GAME
-# =========================
+
 def detail_game(games):
     try:
         idx = int(input("Nomor game: ")) - 1
@@ -153,12 +162,22 @@ def detail_game(games):
     print(f"Played: {g['played']}")
     print(f"Downloads: {g['downloads']}")
 
+    ratings = load_ratings()
+
+    print("\n===== REVIEW USER =====")
+
+    ada_review = False
+
+    for r in ratings:
+        if r["game_id"] == g["id"] and r["comment"] != "-":
+            ada_review = True
+            print(f"⭐ {r['rating']} | {r['comment']}")
+
+    if not ada_review:
+        print("Belum ada review.")
+
     input("\nTekan Enter untuk kembali...")
 
-
-# =========================
-# LEADERBOARD
-# =========================
 def leaderboard():
     games = load_games()
 
@@ -168,8 +187,8 @@ def leaderboard():
 
     print("\n=== LEADERBOARD ===")
     print("1. Top Rating")
-    print("2. Most Played")
-    print("3. Most Downloaded")
+    # print("2. Most Played")
+    # print("3. Most Downloaded")
 
     pilih = input("Pilih: ")
 
@@ -185,15 +204,13 @@ def leaderboard():
 
     medals = ["🥇", "🥈", "🥉"]
 
-    print("\n===== HASIL =====")
+    print("\n===== Leaderboard top rating =====")
     for i, g in enumerate(sorted_games[:5], 1):
         icon = medals[i-1] if i <= 3 else f"{i}."
         print(f"{icon} {g['nama_game']} - ⭐ {g['rating']}")
 
 
-# =========================
-# SEARCH GAME
-# =========================
+
 def search_game():
     games = load_games()
 
@@ -209,9 +226,7 @@ def search_game():
         print(f"{g['nama_game']} - ⭐ {g['rating']}")
 
 
-# =========================
-# RATING GAME
-# =========================
+
 def rating_game(user):
     games = load_games()
     ratings = load_ratings()
@@ -239,25 +254,30 @@ def rating_game(user):
     except:
         print("Harus angka!")
         return
+    
+    comment = input("Komentar: ").strip()
+    if not comment:
+        comment = "-"
 
     if nilai < 1 or nilai > 5:
         print("Rating harus 1-5!")
         return
 
-    # cek sudah rating atau belum
+
     for r in ratings:
         if r["user_id"] == user["id"] and r["game_id"] == game["id"]:
             print("❌ Anda sudah pernah merating game ini!")
             return
 
     ratings.append({
-        "id": len(ratings) + 1,
-        "user_id": user["id"],
-        "game_id": game["id"],
-        "rating": nilai
+    "id": len(ratings) + 1,
+    "user_id": user["id"],
+    "game_id": game["id"],
+    "rating": nilai,
+    "comment": comment
     })
 
-    # update rating game
+
     game["total_rating"] += nilai
     game["jumlah_rating"] += 1
     game["rating"] = round(game["total_rating"] / game["jumlah_rating"], 2)
