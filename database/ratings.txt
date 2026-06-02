@@ -1,4 +1,12 @@
+<<<<<<< HEAD
+1|1|1|5
+2|2|1|4
+3|1|2|5
+4|2|2|5
+5|2|3|4
+=======
 1|1|1|5|-
 2|2|1|4|-
 3|1|2|5|-
 4|2|2|4|game sangat menyenangkan untuk dimainkan dengan teman-teman!!
+>>>>>>> 60b0ea8ee8d5b11fecfe4ed71325d583a9d0e8a0

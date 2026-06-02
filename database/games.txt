@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 1|minecraft|adventure|0|0|0|0|0
 2|valorant|fps|0|0|0|0|0
 3|mobile_legends|moba|0|0|0|0|0
@@ -37,3 +38,15 @@
 18|fc_25|sports|0|0|0|0|0
 19|rocket_league|sports|0|0|0|0|0
 20|asphalt_9|racing|0|0|0|0|0 
+=======
+1|minecraft|adventure|0.0|0|0|0|0
+<<<<<<< HEAD
+2|Free fire|Action|5.0|5|1|0|0
+3|Roblox|Adventure|4.0|4|1|0|0
+=======
+2|Free fire|Action|4.0|4|1|0|0
+3|PUBG|Action|0.0|0|0|0|0
+4|roblox dua|RPG|0.0|0|0|0|0
+5|subway|action|0.0|0|0|0|0
+>>>>>>> 60b0ea8ee8d5b11fecfe4ed71325d583a9d0e8a0
+>>>>>>> d1be349a44bfd0e8b2e75e429e300d39b6acda2a
