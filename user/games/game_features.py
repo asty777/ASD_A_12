@@ -69,9 +69,6 @@ def pause():
     """Jeda sampai user tekan Enter"""
     input(f"\n{Colors.CYAN}Tekan Enter untuk melanjutkan...{Colors.RESET}")
 
-# =========================
-# LOAD & SAVE GAMES
-# =========================
 def load_games():
     games = []
     data = read_file(FILE_GAMES)
@@ -109,9 +106,33 @@ def save_games(games):
 
     write_file(FILE_GAMES, data)
 
+<<<<<<< HEAD
 # =========================
 # LOAD & SAVE RATINGS
 # =========================
+=======
+
+
+# def load_ratings():
+#     ratings = []
+#     data = read_file(FILE_RATINGS)
+
+#     for line in data:
+#         if not line.strip():
+#             continue
+
+#         id, user_id, game_id, rating = line.strip().split("|")
+
+#         ratings.append({
+#             "id": int(id),
+#             "user_id": int(user_id),
+#             "game_id": int(game_id),
+#             "rating": int(rating)
+#         })
+
+#     return ratings
+
+>>>>>>> 60b0ea8ee8d5b11fecfe4ed71325d583a9d0e8a0
 def load_ratings():
     ratings = []
     data = read_file(FILE_RATINGS)
@@ -120,13 +141,14 @@ def load_ratings():
         if not line.strip():
             continue
 
-        id, user_id, game_id, rating = line.strip().split("|")
+        id, user_id, game_id, rating, comment = line.strip().split("|")
 
         ratings.append({
             "id": int(id),
             "user_id": int(user_id),
             "game_id": int(game_id),
-            "rating": int(rating)
+            "rating": int(rating),
+            "comment": comment
         })
 
     return ratings
@@ -135,14 +157,19 @@ def save_ratings(ratings):
     data = []
 
     for r in ratings:
-        line = f"{r['id']}|{r['user_id']}|{r['game_id']}|{r['rating']}\n"
+        line = f"{r['id']}|{r['user_id']}|{r['game_id']}|{r['rating']}|{r['comment']}\n"
         data.append(line)
 
     write_file(FILE_RATINGS, data)
 
+<<<<<<< HEAD
 # =========================
 # LIHAT GAME
 # =========================
+=======
+
+
+>>>>>>> 60b0ea8ee8d5b11fecfe4ed71325d583a9d0e8a0
 def lihat_game():
     cls()
     games = load_games()
@@ -182,9 +209,7 @@ def lihat_game():
             print_error("Pilihan tidak valid!")
             pause()
 
-# =========================
-# FILTER GENRE
-# =========================
+
 def filter_genre(games):
     cls()
     genre_list = sorted(list(set([g["genre"] for g in games])))
@@ -220,9 +245,7 @@ def filter_genre(games):
     
     pause()
 
-# =========================
-# DETAIL GAME
-# =========================
+
 def detail_game(games):
     cls()
     print_header("DETAIL GAME")
@@ -241,6 +264,7 @@ def detail_game(games):
         pause()
         return
 
+<<<<<<< HEAD
     cls()
     print_header(f"DETAIL {g['nama_game'].upper()}", "📖")
     print_game_card(g, show_detail=True)
@@ -249,6 +273,31 @@ def detail_game(games):
 # =========================
 # LEADERBOARD
 # =========================
+=======
+    print("\n===== DETAIL GAME =====")
+    print(f"Nama: {g['nama_game']}")
+    print(f"Genre: {g['genre']}")
+    print(f"Rating: ⭐ {g['rating']}")
+    print(f"Played: {g['played']}")
+    print(f"Downloads: {g['downloads']}")
+
+    ratings = load_ratings()
+
+    print("\n===== REVIEW USER =====")
+
+    ada_review = False
+
+    for r in ratings:
+        if r["game_id"] == g["id"] and r["comment"] != "-":
+            ada_review = True
+            print(f"⭐ {r['rating']} | {r['comment']}")
+
+    if not ada_review:
+        print("Belum ada review.")
+
+    input("\nTekan Enter untuk kembali...")
+
+>>>>>>> 60b0ea8ee8d5b11fecfe4ed71325d583a9d0e8a0
 def leaderboard():
     cls()
     games = load_games()
@@ -258,12 +307,19 @@ def leaderboard():
         pause()
         return
 
+<<<<<<< HEAD
     print_header("LEADERBOARD")
     
     print(f"\n{Colors.BOLD}Pilih Kategori:{Colors.RESET}")
     print(f"  {Colors.GREEN}1.{Colors.RESET} Top Rating")
     print(f"  {Colors.GREEN}2.{Colors.RESET} Most Played")
     print(f"  {Colors.GREEN}3.{Colors.RESET} Most Downloaded")
+=======
+    print("\n=== LEADERBOARD ===")
+    print("1. Top Rating")
+    # print("2. Most Played")
+    # print("3. Most Downloaded")
+>>>>>>> 60b0ea8ee8d5b11fecfe4ed71325d583a9d0e8a0
 
     pilih = input(f"\n{Colors.BOLD}{Colors.YELLOW} Pilih: {Colors.RESET}").strip()
 
@@ -288,6 +344,7 @@ def leaderboard():
     print_header(f"{title} LEADERBOARD", icon)
     
     medals = ["🥇", "🥈", "🥉"]
+<<<<<<< HEAD
     
     print(f"\n{Colors.BOLD}{'#'*55}{Colors.RESET}")
     
@@ -311,10 +368,16 @@ def leaderboard():
     
     print(f"{Colors.BOLD}{'#'*55}{Colors.RESET}")
     pause()
+=======
 
-# =========================
-# SEARCH GAME
-# =========================
+    print("\n===== Leaderboard top rating =====")
+    for i, g in enumerate(sorted_games[:5], 1):
+        icon = medals[i-1] if i <= 3 else f"{i}."
+        print(f"{icon} {g['nama_game']} - ⭐ {g['rating']}")
+
+>>>>>>> 60b0ea8ee8d5b11fecfe4ed71325d583a9d0e8a0
+
+
 def search_game():
     cls()
     games = load_games()
@@ -344,9 +407,7 @@ def search_game():
     
     pause()
 
-# =========================
-# RATING GAME
-# =========================
+
 def rating_game(user):
     cls()
     games = load_games()
@@ -403,13 +464,17 @@ def rating_game(user):
         print_error("Harus angka!")
         pause()
         return
+    
+    comment = input("Komentar: ").strip()
+    if not comment:
+        comment = "-"
 
     if nilai < 1 or nilai > 5:
         print_error("Rating harus 1-5!")
         pause()
         return
 
-    # cek sudah rating atau belum
+
     for r in ratings:
         if r["user_id"] == user["id"] and r["game_id"] == game["id"]:
             print_error("Anda sudah pernah merating game ini!")
@@ -420,13 +485,21 @@ def rating_game(user):
     new_id = max([r["id"] for r in ratings]) + 1 if ratings else 1
     
     ratings.append({
+<<<<<<< HEAD
         "id": new_id,
         "user_id": user["id"],
         "game_id": game["id"],
         "rating": nilai
+=======
+    "id": len(ratings) + 1,
+    "user_id": user["id"],
+    "game_id": game["id"],
+    "rating": nilai,
+    "comment": comment
+>>>>>>> 60b0ea8ee8d5b11fecfe4ed71325d583a9d0e8a0
     })
 
-    # update rating game
+
     game["total_rating"] += nilai
     game["jumlah_rating"] += 1
     game["rating"] = round(game["total_rating"] / game["jumlah_rating"], 2)
