@@ -15,7 +15,6 @@ class Colors:
 FILE_GAMES = "games.txt"
 FILE_RATINGS = "ratings.txt"
 
-# Fungsi helper untuk UI
 def print_header(text, icon="✨"):
     """Menampilkan header section dengan icon"""
     print(f"\n{Colors.BLUE}{icon} {Colors.BOLD}{text}{Colors.RESET}")
@@ -270,6 +269,18 @@ def detail_game(games):
 # =========================
 # LEADERBOARD
 # =========================
+def bubble_sort(games, key):
+    games = games.copy()  # supaya data asli tidak berubah
+    n = len(games)
+
+    for i in range(n):
+        for j in range(0, n - i - 1):
+            if games[j][key] < games[j + 1][key]:
+                games[j], games[j + 1] = games[j + 1], games[j]
+
+    return games
+
+
 def leaderboard():
     cls()
     games = load_games()
@@ -280,7 +291,7 @@ def leaderboard():
         return
 
     print_header("LEADERBOARD")
-    
+
     print(f"\n{Colors.BOLD}Pilih Kategori:{Colors.RESET}")
     print(f"  {Colors.GREEN}1.{Colors.RESET} Top Rating")
     print(f"  {Colors.GREEN}2.{Colors.RESET} Most Played")
@@ -289,14 +300,17 @@ def leaderboard():
     pilih = input(f"\n{Colors.BOLD}{Colors.YELLOW} Pilih: {Colors.RESET}").strip()
 
     if pilih == "1":
-        sorted_games = sorted(games, key=lambda x: x["rating"], reverse=True)
+        sorted_games = bubble_sort(games, "rating")
         title = "TOP RATING"
+
     elif pilih == "2":
-        sorted_games = sorted(games, key=lambda x: x["played"], reverse=True)
+        sorted_games = bubble_sort(games, "played")
         title = "MOST PLAYED"
+
     elif pilih == "3":
-        sorted_games = sorted(games, key=lambda x: x["downloads"], reverse=True)
+        sorted_games = bubble_sort(games, "downloads")
         title = "MOST DOWNLOADED"
+
     else:
         print_error("Pilihan tidak valid!")
         pause()
@@ -304,32 +318,34 @@ def leaderboard():
 
     cls()
     print_header(f"{title} LEADERBOARD")
-    
+
     medals = ["🥇", "🥈", "🥉"]
-    
+
     print(f"\n{Colors.BOLD}{'#'*55}{Colors.RESET}")
-    
-    for i, g in enumerate(sorted_games[:10], 1):  # Tampilkan top 10
+
+    for i, g in enumerate(sorted_games[:10], 1):
         if i <= 3:
-            rank = f"{medals[i-1]}"
+            rank = medals[i - 1]
         else:
             rank = f"{i:2}."
-        
-        # Baris leaderboard yang rapi
+
         rating_star = "★" * int(g['rating']) if g['rating'] > 0 else "⏳"
-        
+
         if pilih == "1":
             value_display = f"{rating_star} {g['rating']}"
         elif pilih == "2":
-            value_display = f" {g['played']:,} kali"
+            value_display = f"{g['played']:,} kali"
         else:
-            value_display = f" {g['downloads']:,}"
-        
-        print(f"{Colors.YELLOW}{rank}{Colors.RESET} {Colors.CYAN}{g['nama_game']:<30}{Colors.RESET} {value_display}")
-    
+            value_display = f"{g['downloads']:,}"
+
+        print(
+            f"{Colors.YELLOW}{rank}{Colors.RESET} "
+            f"{Colors.CYAN}{g['nama_game']:<30}{Colors.RESET} "
+            f"{value_display}"
+        )
+
     print(f"{Colors.BOLD}{'#'*55}{Colors.RESET}")
     pause()
-
 
 def search_game():
     cls()
@@ -344,7 +360,7 @@ def search_game():
         pause()
         return
     
-    hasil = [g for g in games if keyword in g["nama_game"].lower()]
+    hasil = [g for g in games if keyword in g["nama_game"].lower()]   ### Sequential search
 
     if not hasil:
         print_warning(f"Game dengan keyword '{keyword}' tidak ditemukan.")

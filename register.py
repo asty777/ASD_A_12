@@ -13,14 +13,14 @@ def register():
 
     # Baca data admin
     try:
-        with open("database/admin.txt", "r") as f:
+        with open("database/users.txt", "r") as f:
             admin_data = f.readlines()
     except FileNotFoundError:
         admin_data = []
 
     # Baca data user
     try:
-        with open("database/user.txt", "r") as f:
+        with open("database/users.txt", "r") as f:
             user_data = f.readlines()
     except FileNotFoundError:
         user_data = []
@@ -44,7 +44,7 @@ def register():
         return
 
     # Simpan ke user.txt
-    with open("database/user.txt", "a") as f:
+    with open("database/users.txt", "a") as f:
         f.write(f"{username},{password}\n")
 
     print(f"Berhasil! Akun '{username}' telah dibuat.")

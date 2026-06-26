@@ -7,7 +7,8 @@ from user.games.game_features import (
     rating_game
 )
 from admin.games.admin_features import admin_menu
-
+from register import register
+ #ini nama gatau jir laper fsuhujjjj 
 # warna
 class Colors:
     HEADER = '\033[95m'
@@ -20,6 +21,7 @@ class Colors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+register()
 def print_banner():
     """Menampilkan banner aplikasi"""
     banner = f"""

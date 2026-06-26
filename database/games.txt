@@ -1,8 +1,8 @@
 1|minecraft|adventure|0.0|0|0|0|0
-2|valorant|fps|0.0|0|0|0|0
+2|Valorant|Action|0.0|0|0|0|0
 3|mobile_legends|moba|0.0|0|0|0|0
 4|pubg_mobile|battle_royale|0.0|0|0|0|0
-5|free_fire|battle_royale|0.0|0|0|0|0
+5|free_fire|battle_royale|5.0|10|2|0|0
 6|genshin_impact|rpg|0.0|0|0|0|0
 7|roblox|sandbox|0.0|0|0|0|0
 8|fortnite|battle_royale|0.0|0|0|0|0
@@ -18,3 +18,4 @@
 19|rocket_league|sports|0.0|0|0|0|0
 20|asphalt_9|racing|0.0|0|0|0|0
 21|Ludo|Puzzle|4.0|4|1|0|0
+22|puzzle|Puzzle|0.0|0|0|0|0
